@@ -1,0 +1,30 @@
+class Main {
+    function void main() {
+        var SnakeList snake_list; 
+        var SnakeNode head, tail, node1, node2, node3;
+        var int x, y, point_x, point_y;
+
+        let snake_list = SnakeList.new(SnakeNode.new(40, 123), 10);
+        let head = snake_list.get_head();
+        let point_x = 0;
+        let point_y = 160;
+        do Screen.drawRectangle(point_x, point_y, point_x + snake_list.get_thickness(), point_y + snake_list.get_thickness());
+
+        while(true) {
+            let tail = snake_list.get_head();
+            let x = tail.get_x();
+            let y = tail.get_y();
+            do Screen.drawRectangle(x, y, x + snake_list.get_thickness(), y + snake_list.get_thickness());
+            do snake_list.move_snake_in_direction(Keyboard.keyPressed(), point_x, point_y);
+            do Sys.wait(200);
+        }
+        return;
+    }
+
+    function void delete_tail_rectanlge(int x, int y, int thickness) {
+        do Screen.setColor(false);
+        do Screen.drawRectangle(x, y, x + thickness, y + thickness);
+        do Screen.setColor(true);
+        return;
+    }
+}

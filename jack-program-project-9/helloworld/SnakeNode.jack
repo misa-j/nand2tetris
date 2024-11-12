@@ -1,0 +1,38 @@
+class SnakeNode {
+    field int x;
+    field int y;
+    field SnakeNode prev;
+    field SnakeNode next;
+
+    constructor SnakeNode new(int in_x, int in_y) {
+        let x = in_x;
+        let y = in_y;
+        return this;
+    }
+
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    method SnakeNode get_prev() {
+        return prev;
+    }
+    
+    method SnakeNode get_next() {
+        return next;
+    }
+    
+    method SnakeNode get_x() {
+        return x;
+    }
+    
+    method SnakeNode get_y() {
+        return y;
+    }
+
+    method void set_next(SnakeNode in_next) {
+        let next = in_next;
+        return;
+    }
+}

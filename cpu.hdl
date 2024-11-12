@@ -1,0 +1,105 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/5/CPU.hdl
+/**
+ * The Hack Central Processing unit (CPU).
+ * Parses the binary code in the instruction input and executes it according to the
+ * Hack machine language specification. In the case of a C-instruction, computes the
+ * function specified by the instruction. If the instruction specifies to read a memory
+ * value, the inM input is expected to contain this value. If the instruction specifies
+ * to write a value to the memory, sets the outM output to this value, sets the addressM
+ * output to the target address, and asserts the writeM output (when writeM = 0, any
+ * value may appear in outM).
+ * If the reset input is 0, computes the address of the next instruction and sets the
+ * pc output to that value. If the reset input is 1, sets pc to 0.
+ * Note: The outM and writeM outputs are combinational: they are affected by the
+ * instruction's execution during the current cycle. The addressM and pc outputs are
+ * clocked: although they are affected by the instruction's execution, they commit to
+ * their new values only in the next cycle.
+ */
+CHIP CPU {
+
+    IN  inM[16],         // M value input  (M = contents of RAM[A])
+        instruction[16], // Instruction for execution
+        reset;           // Signals whether to re-start the current
+                         // program (reset==1) or continue executing
+                         // the current program (reset==0).
+
+    OUT outM[16],        // M value output
+        writeM,          // Write to M? 
+        addressM[15],    // Address in data memory (of M)
+        pc[15];          // address of next instruction
+
+    PARTS:
+	//// Replace this comment with your code.
+    //Mux8Way16(a=false, b[0]=jgtOut, c[0]=zrOut, d[0]=jgeOut, e[0]=ngOut, f[0]=jneOut, g[0]=jleOut, h[0]=true, sel=instruction[0..2], out=jumpOut);
+    Not(in=instruction[15], out=aInstruction);
+    Not(in=aInstruction, out=notAInstruction);
+    Or(a=aInstruction, b=instruction[5], out=shouldLoadAreg);
+
+    And(a=notAInstruction, b=instruction[4], out=shouldLoadDreg);
+
+    And(a=notAInstruction, b=instruction[3], out=writeM);
+    
+    Mux16(a=instruction, b=aluOut, sel=instruction[15], out=instOrAluOut);
+    Register(in=instOrAluOut, load=shouldLoadAreg, out=aRegOut, out[0..14]=addressM);
+    Mux16(a=aRegOut, b=inM, sel=instruction[12], out=inMorAregOut);
+    PC(in=aRegOut, load=shouldJumpOut, inc=notShouldJumpOut, reset=reset, out[0..14]=pc);
+    Register(in=aluOut, load=shouldLoadDreg, out=dRegOut);
+    ALU(x=dRegOut, y=inMorAregOut, zx=instruction[11], nx=instruction[10], zy=instruction[9], ny=instruction[8], f=instruction[7], no=instruction[6], out=aluOut, zr=zrOut, ng=ngOut, out=outM);
+    
+    // JGT
+    Or(a=zrOut, b=ngOut, out=jgtTmp);
+    Not(in=jgtTmp, out=jgtOut);
+
+    // JEQ
+    // use zrOut
+
+    // JGE
+    Not(in=ngOut, out=jgeOut);
+
+    // JLT
+    // use ngOut
+
+    // JNE
+    Not(in=zrOut, out=jneOut);
+
+    // JLE
+    Or(a=ngOut, b=zrOut, out=jleOut);
+
+    // JMP
+    And(a=instruction[0], b=instruction[1], out=j1andj2);
+    And(a=instruction[2], b=j1andj2, out=jmpOut);
+
+    DMux8Way(in=true, sel=instruction[0..2], a=noJout, b=jgtOutSelect, c=jeqOutSelect, d=jgeOutSelect, e=jltOutSelect, f=jneOutSelect, g=jleOutSelect, h=jmpOutSelect);
+
+    And(a=jgtOutSelect, b=jgtOut, out=jgtJumpOut);
+    And(a=jeqOutSelect, b=zrOut, out=jeqJumpOut);
+    And(a=jgeOutSelect, b=jgeOut, out=jgeJumpOut);
+    And(a=jltOutSelect, b=ngOut, out=jltJumpOut);
+    And(a=jneOutSelect, b=jneOut, out=jneJumpOut);
+    And(a=jleOutSelect, b=jleOut, out=jleJumpOut);
+    And(a=jmpOutSelect, b=jmpOut, out=jmpJumpOut);
+
+    Or8Way(in[0]=jgtJumpOut, in[1]=jeqJumpOut, in[2]=jgeJumpOut, in[3]=jltJumpOut, in[4]=jneJumpOut, in[5]=jleJumpOut, in[6]=jmpJumpOut, out=shouldJumpOut1);
+    Not(in=shouldJumpOut, out=notShouldJumpOut);
+    And(a=shouldJumpOut1, b=notAInstruction, out=shouldJumpOut);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
