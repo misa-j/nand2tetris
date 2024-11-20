@@ -1,6 +1,9 @@
+/assembler/test-programs/
 /jack-program-project-9/
 /syntax-analyzer/compiler-test-programs/
+/syntax-analyzer/test-programs/
 /vm-translator/test-vm-programs/
+/vm-translator/program-flow-functions/
 
 **/__pycache__/
 
