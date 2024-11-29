@@ -4,6 +4,7 @@
 /syntax-analyzer/test-programs/
 /vm-translator/test-vm-programs/
 /vm-translator/program-flow-functions/
+/jack-os/jack-os-dir/
 
 **/__pycache__/
 
