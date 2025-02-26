@@ -5,6 +5,7 @@
 /vm-translator/test-vm-programs/
 /vm-translator/program-flow-functions/
 /jack-os/jack-os-dir/
+/jack-os
 
 **/__pycache__/
 
